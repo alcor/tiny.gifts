@@ -277,7 +277,7 @@ img#red {
 
 #intro-icon {
 	float:left;
-	width:4em; height:4em; margin-right:1em;
+	width:4em; height:4em;
 	margin-bottom:2em;
 }
 
@@ -297,9 +297,18 @@ img#red {
 	margin-bottom:0.2em;
 }
 
+.formrow {
+	display:flex;
+	flex-direction: row;
+}
+
+.formel {
+	flex: 1 1 0px;
+	margin-left:0.5em;
+}
 .formel input,
 .formel textarea{
-flex-grow:4;
+flex-grow:40;
 border-style: none;
 background:none;
 font-weight:300;

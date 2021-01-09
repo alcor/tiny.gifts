@@ -26,9 +26,9 @@ var indexView = {
     
       m('img#intro-icon', {src:'favicon.svg'}),
       m('div#intro-info', 
-        'Wrap messages, gift codes, and more in a nice design.',
+        'Send messages, gift codes, and more with a tiny card.',
         m('p'),
-        m('button#new', {onclick: function(){ location.href='#edit' }}, "WRAP ONE")
+        m('button#new', {onclick: function(){ location.href='#edit' }}, "CREATE")
       )
     )]
   }
@@ -132,35 +132,47 @@ function editView(initialVnode) {
             return [
               m("div.edit-container", 
                 m("form.edit-content#form", {onsubmit:submit}, 
-                  m("div.formel",
-                    m("label", {for:"to-field"}, "To", m("span.hint", " recipient or blank")),
-                    m("input#to-field", {name:"to", placeholder:"Peaches", size:8}, "")
+                  m("div.formrow",
+                    m("div.formel",
+                      m("label", {for:"from-field"}, "From"),
+                      m("input#from-field", {name:"from", placeholder:"Pistacio", size:8})
+                    ),
+                    m("div.formel",
+                      m("label", {for:"to-field"}, "To", m("span.hint", " recipient or blank")),
+                      m("input#to-field", {name:"to", placeholder:"Peaches", size:8}, "")
+                    ),
                   ),
-                  m("div.formel",
-                    m("label", {for:"from-field"}, "From"),
-                    m("input#from-field", {name:"from", placeholder:"Pistacio", size:8})
+                  m("div.formrow",
+                    m("div.formel",
+                      m("label", {for:"note-field"}, "Front Note",  m("span.hint", ", sweet nothings")),
+                      m("textarea#note-field", {name:"note", placeholder:"Thinking of you, always", size:8})
+                    ),
+                    m("div.formel",
+                      m("label", {for:"info-field"}, "Back Note", m("span.hint", ", a description of the gift")),
+                      m("textarea#info-field", {name:"info", placeholder:"A token of my affection", size:8})
+                    ),
                   ),
-                  m("div.formel",
-                    m("label", {for:"note-field"}, "Front Note",  m("span.hint", ", sweet nothings")),
-                    m("textarea#note-field", {name:"note", placeholder:"Thinking of you, always", size:8})
+                  m("div.formrow",
+                    m("div.formel",
+                      m("label", {for:"link-field"}, "Link", m("span.hint", " to redeem or open gift")),
+                      m("input#link-field", {name:"link", placeholder:"https://example.com/redeem", size:8})
+                    ),
+                    m("div.formel",
+                      m("label", {for:"item-field"}, "Item", m("span.hint", ", a link to the item (for imagery)")),
+                      m("input#item-field", {name:"item", placeholder:"https://example.com/product", size:8})
+                    ),
                   ),
-                  m("div.formel",
-                    m("label", {for:"info-field"}, "Back Note", m("span.hint", ", a description of the gift")),
-                    m("input#info-field", {name:"info", placeholder:"", size:8})
+                  m("div.formrow",
+                    m("div.formel",
+                      m("label", {for:"code-field"}, "Code", m("span.hint", " to paste into site")),
+                      m("input#code-field", {name:"code", placeholder:"1618-0339-8874-9894", size:8})
+                    )//,
+                    // m("div.formel",
+                    //   m("label", {for:"code-field"}, "Theme", m("span.hint", " ")),
+                      
+                    // )
                   ),
-                  m("div.formel",
-                    m("label", {for:"code-field"}, "Code", m("span.hint", " to paste into site")),
-                    m("input#code-field", {name:"code", placeholder:"1618-0339-8874-9894", size:8})
-                  ),
-                  m("div.formel",
-                    m("label", {for:"link-field"}, "Link", m("span.hint", " to redeem or open gift")),
-                    m("input#link-field", {name:"link", placeholder:"https://store.example.com/redeem", size:8})
-                  ),
-                  m("div.formel",
-                    m("label", {for:"item-field"}, "Item", m("span.hint", ", a link to the item (for imagery)")),
-                    m("input#item-field", {name:"item", placeholder:"", size:8})
-                  ),
-                  m("button", {type:"submit"}, "PREVIEW")
+                  m("div",m("button", {type:"submit", style:"float:left;"}, "PREVIEW"))
                 )
               )];
 
