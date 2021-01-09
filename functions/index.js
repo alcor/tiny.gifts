@@ -11,7 +11,6 @@ function infoForPath(path) {
     dir.forEach( d => {
       if (d.length) {
         var components = d.split(":");
-        console.log(components)
         var key = components.shift()
         info[key] = decodeURIComponent(components.join(":"));  
       }
@@ -23,7 +22,6 @@ function infoForPath(path) {
 }
 
 exports.index = functions.https.onRequest((req, res) => {
-  console.log(req.path)
   var error;
   var info = infoForPath(req.path);
   if (info) {
@@ -42,7 +40,7 @@ exports.index = functions.https.onRequest((req, res) => {
 <meta property="og:title" content="${title}">
 <meta property="og:description" content="${"a tiny.gift"}">
 <meta property="og:type" content="website">
-<meta property="og:image" content="/og?to=${info.to}&from=${info.from}">
+<meta property="og:image" content="${req.protocol}://${req.get('host')}/og?to=${info.to}&from=${info.from}">
 <script src="/mithril.js"></script>
 </head>
 
@@ -76,12 +74,10 @@ exports.index = functions.https.onRequest((req, res) => {
 
 exports.image = functions.https.onRequest((req, res) => {
   https.get(req.query.url, { headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_1) AppleWebKit/601.2.4 (KHTML, like Gecko) Version/9.0.1 Safari/601.2.4 facebookexternalhit/1.1 Facebot Twitterbot/1.0' } }, function(res2) {
-    console.log("data-url", req.query.url)
     res2.setEncoding('utf8')  
     var data = ""
     res2.on("data", function(chunk) { data += chunk; });
     res2.on("end", function() { 
-      console.log("data", data)
       var $ = cheerio.load(data);
       var result = $('meta[property="og:image"]').attr('content')
                 || $('meta[property="og:image:secure_url"]').attr('content');
@@ -89,7 +85,6 @@ exports.image = functions.https.onRequest((req, res) => {
       res.end();
      });    
   }).on('error', function(e) {
-    console.log("Got error: " + e.message);
     res.status(403).send(e.message)
     res.end();
   });
