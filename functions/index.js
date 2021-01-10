@@ -45,7 +45,9 @@ exports.index = functions.https.onRequest((req, res) => {
 </head>
 
 <script> window.giftData = ${JSON.stringify(info)} </script>
+<body class="theme-pop">
 <div id="main-container"></div>
+</body>
 <script src="/gift.js"></script>
 </html>`);
       return;

@@ -36,13 +36,11 @@ var indexView = {
 
 function infoForPath(path) {
   var dir = path.split(/\//);
-  console.log("dir", dir)
   if (dir.length > 0) {
     var info = {};  
     dir.forEach( d => {
       if (d.length) {
         var components = d.split(":");
-        console.log(components)
         var key = components.shift()
         info[key] = decodeURIComponent(components.join(":"));  
       }
@@ -58,41 +56,27 @@ window.addEventListener("load", update);
 window.addEventListener("hashchange", update);
 function update() {
   var hash = window.location.hash;
-  console.log("hash", hash, hash.length, );
-
   if (hash.length) {
     var dataString = hash.substring(1).replace(/\_/g,"")
-    console.log(dataString)
     // Remove _, introduced every 300c to address a bug in iMessage url parsing
     let string = atob(dataString)
     Object.assign(window.giftData, infoForPath(string));
-    console.log(string,window.giftData)
   }
 
   if (hash == "#edit") {
     m.render(root, m(editView));
   } else if (Object.keys(window.giftData).length > 0) {
     m.render(root, m(puzzleView, {data:window.giftData}));
+    flipCard();
   } else {
     m.render(root, m(indexView));
   } 
-
-//   var canvas = document.getElementById('canvas'); 
-//   var ctx = canvas.getContext('2d'); 
-//   ctx.fillStyle = 'green'; 
-//   ctx.fillRect(10, 10, 100, 100);
-//   svgtest = svgtest.replace(/#6050DC/g, "cyan");
-//   svgtest = svgtest.replace(/#C4C4C4/g, "red");
-//   svgtest = svgtest.replace(/#/g, "%23")
-//   // svgtest = "<svg viewBox='0 0 14 24' xmlns='http://www.w3.org/2000/svg' width='12px' height='18px'><path fill='rgb(13, 132, 254)' d='M2.1.1L0 2.2l8.3 8.3L9.8 12l-1.5 1.5L0 21.8l2.1 2.1L14 12z' /></svg>"
-//   var backgroundImage = `url("data:image/svg+xml;charset=UTF-8,${svgtest}")`;
-//   console.log("boo",backgroundImage)
-// document.body.style.backgroundImage = backgroundImage;
-// console.log("hoo", document.body.style.backgroundImage)
-
-
-
 }
+
+document.addEventListener('scroll', function(e) {
+    console.log(e);
+  e.preventDefault();
+});
 
 
 function submit(event) {
@@ -180,13 +164,30 @@ function editView(initialVnode) {
     }
 }
 
+
+var flips = -1;
+var tilt = 0;
+function flipCard(e) {
+  flips++;
+  var flipped = flips % 2
+  tilt = (Math.random()) * 5 * ( flipped ? 1 : -1)
+
+    var card = document.getElementById("card-body");
+    card.classList.toggle("flipped", flipped)
+    card.style.transform = `translateY(${flips % 2 ? "100%" : "0"}) rotateZ(${tilt}deg) rotateX(${flips * 180}deg)` 
+  }
+
+  function copyCode(code) {
+    copyToClipboard(code);
+    document.getElementById("copy").innerText = "✓";
+    setTimeout(e => {document.getElementById("copy").innerText = "COPY";}, 5000)
+  }
+
 function puzzleView(initialVnode) {
     var flipped = false;
     return {
         view: function(vnode) {
-          console.log("attrs:", vnode.attrs);
           var data = vnode.attrs.data
-          console.log("flipped", flipped);
 
             if (data.link && !data.link.startsWith("http")) data.link = "https://" + data.link
             var url = data.link ? new URL(data.link) : undefined
@@ -195,17 +196,10 @@ function puzzleView(initialVnode) {
             var scale =  data.note ? Math.min(Math.max(60 / data.note.length, 1), 3) * 100 : 100;
             
             return [
-              m("img.blob#blue", {src:"/img/blue.svg"}),
-              m("img.blob#red", {src:"/img/red.svg"}),
-              m("img.blob#pink", {src:"/img/pink.svg"}),
               m("div.gift-container.card#gift-container" + (flipped ? ".flipped" : ""), {
-                  onclick: (e) => { 
-                    console.log(e.target)
-                    flipped = !flipped; 
-                    document.getElementById("gift-container").classList.toggle("flipped");
-                  }
+                  onclick: flipCard
                 }, 
-                m("div.card-body",
+                m("div.card-body#card-body",
                   m("div.gift-front.card-face",
                     !data.note ? undefined :
                     m("div.note", {style:`font-size:${scale}%`}, data.note),
@@ -213,7 +207,7 @@ function puzzleView(initialVnode) {
                     m("div.from", "—" + data.from),
                   ),
                   m("div.gift-back.card-face" ,
-                    m("div.gift-image", {style: `background-image:url(/image?url=${data.item})`}),
+                    m("div.gift-image", data.item ? {style: `background-image:url(/image?url=${data.item})`} :undefined ),
                     m("div.info-container", data.info),
                      
                     // !data.from ? undefined :
@@ -222,14 +216,14 @@ function puzzleView(initialVnode) {
                     // m("div.to", "TO: ", data.to),
 
                     !data.code ? undefined :
-                    m("div.code-container",
-                      m("div.code-field", {contenteditable:"true", onclick: function(e) {copyToClipboard(data.code); e.stopPropagation();}}, m.trust(data.code)),
-                      m("button#copy", {onclick: function(e){ copyToClipboard(data.code); document.getElementById("copy").innerText = "✓"; e.stopPropagation(); }}, "Copy"),
+                    m("div.code-container", {onclick: (e) => { copyCode(data.code); e.stopPropagation(); }},
+                      m("div.code-field", data.code),
+                      m("button#copy","Copy"),
                     ),
                     !data.link ? undefined :
-                    m("div.link-container", 
+                    m("div.link-container",  {onclick: e => { window.open(data.link,'_blank'); e.stopPropagation(); }},
                     m("div.host", (new URL(data.link)).hostname.split(".").slice(-2).join(".")),
-                    m("button#link", {onclick: e => { window.open(data.link,'_blank'); e.stopPropagation(); }}, "GET")
+                    m("button#link", "GET")
                     ),
                   )
                 )
