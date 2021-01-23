@@ -3,16 +3,17 @@ const cheerio = require('cheerio');
 const https = require('https');
 const { createCanvas, loadImage } = require('canvas');
 
-
 function infoForPath(path) {
-  var dir = path.split(/\//);
-  if (dir.length > 1) {
+  if (path.length > 1) {
+    var dir = path.split(/\//);
     var info = {};  
     dir.forEach( d => {
       if (d.length) {
         var components = d.split(":");
-        var key = components.shift()
-        info[key] = decodeURIComponent(components.join(":"));  
+        var key = components.shift();
+        var value = components.join(":");
+        value = value.replace(/__/g, "\n").replace(/_/g, " ");
+        info[key] = decodeURIComponent(value);  
       }
     })
     return info;
@@ -21,57 +22,45 @@ function infoForPath(path) {
   }
 }
 
+function cleanText(t) {
+  if (!t) return "";
+  t = t.replace(/__/g, "\n").replace(/_/g, " ");
+  return encodeURIComponent(t);
+}
+
 exports.index = functions.https.onRequest((req, res) => {
-  var error;
+  var title = "tiny.gifts";
+  var pageTitle = title;
+  var description = "a tiny.gift";
+
   var info = infoForPath(req.path);
+  var image = ""
   if (info) {
-    var url = info.link ? new URL(info.link) : undefined;
-    var title = `to:${info.to}, from:${info.from}`;
-
-    try {
-      res.status(200).send(`<!doctype html>
+    if (info.to) title = `to:${info.to}, from:${info.from}`;
+    if (info.re) {
+      description = pageTitle = info.re;
+    }
+    image = `${req.protocol}://${req.get('host')}/og?to=${cleanText(info.to)}&from=${cleanText(info.from)}&re=${cleanText(info.re)}`;
+  }
+  res.status(200).send(`<!doctype html>
 <head>
-<link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=block" rel="stylesheet">
-<link rel="stylesheet" type="text/css" href="/gift.css">
-<title>tiny.gifts</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-<meta property="og:title" content="${title}">
-<meta property="og:description" content="${"a tiny.gift"}">
-<meta property="og:type" content="website">
-<meta property="og:image" content="${req.protocol}://${req.get('host')}/og?to=${info.to}&from=${info.from}">
-<script src="/mithril.js"></script>
+  <title>${title}</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta property="og:title" content="${title}">
+  <meta property="og:description" content="${description}">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="${image}">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=block" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=block" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="/gift.css">
+  <script src="/mithril.js"></script>
+  <style id="theme"></style>
 </head>
-
-<script> window.giftData = ${JSON.stringify(info)} </script>
-<body class="theme-pop">
-<div id="main-container"></div>
-</body>
+<body class="default loading"><div id="main-container"></div></body>
 <script src="/gift.js"></script>
 </html>`);
-      return;
-    } catch (e) {
-      error = e;
-    }
-  }
-
-  res.status(200).send(`<!doctype html>
-    <head>
-      <link rel="stylesheet" type="text/css" href="/index.css">
-      <title>tiny.gifts</title>
-    </head>
-    <body style="font-family:sans-serif">
-    <div class="content">
-    <h1>tiny.gifts</h1>
-    This site lets you share a gift with someone.
-    <br>When you send these via Slack, SMS, and other modern chat clients,
-
-    <div class="error">${error ? error.message : ""}</div>
-    </div>
-    </body>
-    </html>`);
-
 });
 
 exports.image = functions.https.onRequest((req, res) => {
@@ -105,10 +94,13 @@ var roundRect = function (ctx, x, y, w, h, r) {
   ctx.closePath();
   return ctx;
 }
+
 exports.og = functions.https.onRequest((req, res) => {
   const info = req.query;
   const canvas = createCanvas(1200, 630);
   const ctx = canvas.getContext('2d');
+
+  loadImage('img/stripes.svg').then((image) => {
 
   var width = canvas.width;
   var height = canvas.height;
@@ -116,38 +108,54 @@ exports.og = functions.https.onRequest((req, res) => {
   if (info) {
     ctx.beginPath();
     ctx.rect(0, 0, canvas.width, canvas.height);
-    
-    var grd = ctx.createLinearGradient(0, 0, width, height);
-    grd.addColorStop(0, "#009FFF");
-    grd.addColorStop(1, "rgba(47, 236, 145, 1.0)");
-    ctx.fillStyle = grd
-    ctx.fill();
-
-
+  
     var cardW = 856 / 1.5;
     var cardH = 540 / 1.5;
 
+    ctx.save()
+    ctx.drawImage(image, 0, 0, width, height) 
 
-    ctx.rotate(-3 * Math.PI / 180);
-    ctx.translate(0,cardH/50);
+    var radial = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 0, canvas.width/2, canvas.height/2, Math.hypot(canvas.width/2, canvas.height/2))
+    radial.addColorStop(0, "white");
+    radial.addColorStop(1, "white");
+    ctx.fillStyle = radial
+    ctx.globalCompositeOperation = "source-in"
+    ctx.globalAlpha = 0.1;
+    ctx.fill(); 
+
+    var linear = ctx.createLinearGradient(0, 0, width, height);
+    linear.addColorStop(0, "#009FFF");
+    linear.addColorStop(1, "rgba(47, 236, 145, 1.0)");
+    ctx.fillStyle = linear
+    ctx.globalCompositeOperation = "destination-over"
+    ctx.globalAlpha = 1.0;
+
+    ctx.fill();
+    ctx.restore()
+
+    var tilt = (Math.random() - 0.5) * 5
+    ctx.translate(width/2, height/2);
+    ctx.rotate(tilt * Math.PI / 180);
+    ctx.translate(-width/2, -height/2);
+
     var x = (width - cardW) / 2;
     var y = (height - cardH) / 2;
     ctx.fillStyle = "white"
 
-ctx.save();
-ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
-ctx.shadowOffsetY = cardH / 20;
-ctx.shadowBlur = 15;
-//ctx.globalCompositeOperation = "hard-light"
+    ctx.save();
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+    ctx.shadowOffsetY = cardH / 20;
+    ctx.shadowBlur = 15;
+    ctx.globalCompositeOperation = "hard-light"
 
-roundRect(ctx, x, y, cardW, cardH, 33).fill();
-ctx.restore();
+    roundRect(ctx, x, y, cardW, cardH, 33).fill();
+    ctx.restore();
 
     var size = cardH/5;
   ctx.font = `700 ${size}px Helvetica`;
   ctx.fillStyle = "black";
   
-  ctx.fillText("A tiny.gift\nfor you", x + size/2, y + size *1.5);
+  ctx.fillText(info.re || "A tiny.gift\nfor you", x + size/2, y + size *1.5);
   ctx.font = `700 ${size/2}px Helvetica`;
   if (info.from && info.from != "undefined") ctx.fillText("—" + info.from, x + size/2, y + cardH - size/2);
 
@@ -159,12 +167,9 @@ ctx.restore();
     ctx.fill();
       
   }
-
-  // loadImage('favicon.png').then((image) => {
-    // ctx.drawImage(image, 50, 0, 70, 70)  
     
     res.set('Cache-Control', 'public, max-age=60, s-maxage=31536000');
     res.writeHead(200, {'Content-Type': 'image/png'});
     canvas.createJPEGStream().pipe(res);
-  // })
+  })
 });

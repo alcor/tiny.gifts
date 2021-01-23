@@ -1,11 +1,13 @@
 * {
-	font-family: 'Manrope', sans-serif;
-	--time: 500ms
+	font-family: var(--font);
+	--time: 500ms;
+	--background-color: #ccc;
 }
 
 body {
 	font-size:5vmin;
-  margin:0;
+	margin:0;
+	--font: 'Manrope', sans-serif;
 }
 
 #main-container {
@@ -88,17 +90,33 @@ button:focus{
 	z-index: 0;
 	xmix-blend-mode: hard-light;
 	user-select: none;
+	opacity:1.0;
+	transition: opacity var(--time) cubic-bezier(0.0, 0.0, 0.2, 1),
+	   transform var(--time) cubic-bezier(0.0, 0.0, 0.2, 1);
+	transform:translateY(0vmin) scale(1.0);
+}
+body.loading .card {
+	opacity:0.0;
+	transform:translateY(30%) scale(1.1);
 }
 
 .card-body {
-	transition: z-index, transform calc(var(--time)) ease-out;
-  transition-delay: var(--time), 0s;
-	position: relative;.
-  cursor: s-resize;
+	transition: z-index, transform var(--time) ease-out, opacity var(--time) ;
+  transition-delay: var(--time), 0s, 0s;
+	position: relative;
+  cursor: pointer;
   transform-style: preserve-3d;
-	transform-origin: top center;
+	transform-origin: center center;
 
 }
+
+
+#back {
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+	transform: rotateX(-180deg);
+}
+
 
 .card.flipped .card-body {
 
@@ -109,7 +127,7 @@ button:focus{
 }
 
 .card:active {
-	xtransform: scale(.99);
+	transform: scale(.99);
 }
 
 .card-face {
@@ -128,42 +146,34 @@ button:focus{
 }
 
 
-.gift-back {
-  position: absolute;
-  top: 0; right: 0; bottom: 0; left: 0;
-	transform: rotateX(-180deg);
-}
 
-/* .gift-back {
+/* #back {
 	filter: brightness(0.4);
 }
-.flipped .gift-back {
+.flipped #back {
 	filter: brightness(1.0);
 
 } */
 
-.gift-front,
-.gift-back,
-.edit-container {
+.card-face {
 	width:17.12em;
-	min-height:10.80em;
-	max-height:17.12em;
+	min-height:10.80em; /*10.80em;*/
+	max-height:21.60;
 	backdrop-filter: blur(.1em);
 	color:rgba(0,0,0,0.80);
 	background-size: 400% 400%;
 	background: radial-gradient(farthest-corner at 20% 20%,
-	rgba(255,255,255,1.0) 0%,rgba(255,255,255,0.5) 100%);
+	rgba(255,255,255,0.97) 0%,rgba(255,255,255,0.87) 100%);
 	border-radius:.576em;
 	padding:1em;
 	box-sizing: border-box;
 	font-weight:600;
 	/* margin-bottom:10vh; */
 	overflow-y: scroll;
-
 }
 
-.gift-front,
-.gift-back {
+#front,
+#back {
 	display:flex;
 	flex-direction:column;
 	align-items:flex-start;
@@ -191,6 +201,8 @@ button:focus{
 	flex:1 0 auto;
 	width:75%;
 	font-weight:400;
+	white-space:pre-wrap;
+
 }
 .code-container,
 .link-container {
@@ -201,6 +213,14 @@ button:focus{
 	align-items: center;;
 	margin-top:0.3em;
 }
+.code-container:hover,
+.link-container:hover {
+	background:rgba(0,0,0,0.1);
+	border-radius:1em;
+	margin-left:-0.5em;
+	padding-left:0.5em;
+}
+
 
 .edit-content {
 	display: flex;
@@ -214,7 +234,7 @@ button:focus{
 
 
 /* background: bg-color bg-image position/bg-size bg-repeat bg-origin bg-clip bg-attachment initial|inherit; */
-.theme-pop #main-container {
+body.default #background {
 	background:
 	url(img/blue.svg) top 0 right 0 / 50vw no-repeat,
 	url(img/pink.svg) bottom -10vmax left -10vmax / 60vmax no-repeat,
@@ -222,14 +242,17 @@ button:focus{
 	linear-gradient(110.73deg, #009FFF 10.61%, rgba(47, 236, 145, 0.58) 93.57%);
 }
 
+body:not(.default) .background {
+	filter:blur(0.1vmin);
+}
 .theme-candycane #main-container {
 
-	background: url(img/polkadots.svg),
+	background: url(img/polkadots.svg),I
 	red;
 }
 
 #gift-container {
-	padding-bottom:10vh;
+	padding-bottom:0vh;
 }
 
 img.blob {
@@ -247,7 +270,6 @@ img.blob {
 	align-items: center;
 	font-size:4vmin;
 	justify-content: center;
-	padding-bottom:20vh;
 }
 
 #intro-icon {
@@ -256,12 +278,15 @@ img.blob {
 	margin-bottom:2em;
 }
 
+form {
+	margin: -0.5em;
+}
+
 .formel {
-	font-size:66%;
+	font-size:60%;
 	display:flex;
 	flex-direction:column;
 	margin-bottom:1em;
-	border-left:3px solid rgba(0,0,0,.5);
 	padding-left:0.2em;
 }
 
@@ -270,7 +295,8 @@ img.blob {
 	font-weight:800;
 	opacity:0.8;
 	margin-left:0.2em;
-	margin-bottom:0.2em;
+	margin-bottom:0.1em;
+	text-transform: uppercase;
 }
 
 .formrow {
@@ -287,9 +313,10 @@ img.blob {
 flex-grow:40;
 border-style: none;
 background:none;
-font-weight:300;
+font-weight:400;
 resize: vertical;
 padding:0.2em;
+border-bottom:1px solid black;
 }
 
 
@@ -307,5 +334,129 @@ padding:0.2em;
 }
 
 ::placeholder {
-  opacity: 0.1;
+  opacity: 0.3;
+}
+
+.themes {
+	display:flex;
+	flex-direction:row;
+	flex-wrap: wrap;
+}
+.theme {
+	font-size:150%;
+}
+.theme {
+	border-radius:1em;
+	width:1.5em;
+	height:1.5em;
+	line-height:1.5em;
+	text-align:center;
+	cursor:pointer;
+}
+
+.theme:hover {
+
+	background:rgba(0,0,0,0.1);
+}
+
+
+
+
+#main-container, #background, #foreground {
+	background-size:cover;
+	background-position: center center;
+}
+
+
+.foreground,
+.background {
+	width:100vw;
+	height:100vh;
+	position:fixed;
+	top:0; right: 0; bottom:0; left: 0;
+	/* -webkit-mask-size: 200vmax;
+	-webkit-mask-position: center;
+	background:var(--foreground-color);
+	animation: rotation 360s infinite linear; */
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+body.theme-stripes .foreground {
+	-webkit-mask-image: url(img/stripes.svg);
+}
+
+body.theme-dots .foreground {
+	-webkit-mask-image: url(img/dots.svg);
+}
+
+body.theme-burst .foreground {
+	-webkit-mask-image: url(img/burst.svg);
+}
+
+body.theme-stars .foreground {
+	-webkit-mask-image: url(img/stars.svg);
+}
+
+
+
+
+
+
+/* NJ Personal */
+
+@font-face {
+  font-family: 'Brillig';
+  src: url('img/theme/brillig.woff')  format('woff'); /* Safari, Android, iOS */
+}
+
+body.zh .note {
+	background-image: url(img/theme/zh.svg);
+	padding-top:2.5em;
+	margin-top:-0.5em;
+	background-position:center top;
+	background-repeat: no-repeat;
+	background-size:2em;
+	font-size:400%;
+}
+
+body.zh .card {
+	line-height:130%;
+}
+
+body.zh .card-face {
+	border-radius:0.05em;
+}
+
+body.zh #front {
+	border: 0.2em solid rgb(236, 106, 0);
+}
+body.zh #back {
+	background: 
+	radial-gradient(farthest-corner at 20% 20%,
+	rgb(236, 106, 0) 0%, rgb(200, 80, 0) 100%);
+	color:white;
+}
+
+body.zh {--font:'Brillig', cursive; letter-spacing: 0.02em;}
+
+body.zh #main-container {
+	background-color:gray;
+	padding-top:10vh;
+	padding-bottom:10vh;
+
+}
+
+body.zh .card-face {
+	font-size:150%;
+	width:12.0em;
+	min-height:12em; /*10.80em;*/
+	max-height:121.60em;
 }
