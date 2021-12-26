@@ -32,7 +32,7 @@ input, button, textarea {
 	border-radius:0.2em;
 	font-weight:600;
 	font-size:60%;
-	overflow-x:scroll;
+	overflow-x:auto;
 	white-space:nowrap;
 	padding-right:1em;
 }
@@ -88,12 +88,11 @@ button:focus{
 	transition: z-index;
   transition-delay: var(--time);
 	z-index: 0;
-	xmix-blend-mode: hard-light;
-	user-select: none;
 	opacity:1.0;
 	transition: opacity var(--time) cubic-bezier(0.0, 0.0, 0.2, 1),
 	   transform var(--time) cubic-bezier(0.0, 0.0, 0.2, 1);
 	transform:translateY(0vmin) scale(1.0);
+	user-select: none;
 }
 body.loading .card {
 	opacity:0.0;
@@ -110,25 +109,18 @@ body.loading .card {
 
 }
 
-
 #back {
   position: absolute;
   top: 0; right: 0; bottom: 0; left: 0;
 	transform: rotateX(-180deg);
 }
 
-
 .card.flipped .card-body {
-
 }
 
 .card:not(.flipped):hover .card-body {
-
 }
 
-.card:active {
-	transform: scale(.99);
-}
 
 .card-face {
 	-webkit-backface-visibility: hidden;
@@ -140,38 +132,36 @@ body.loading .card {
 	  inset 0 -.1em 0 rgba(255,255,255,0.4),
 	  0 .5em .9em rgba(0,0,0,0.06),
 	  0 .3em .3em rgba(0,0,0,0.04);
-	padding: 1.5rem;
 	transition:filter var(--time);
-	
-}
-
-
-
-/* #back {
-	filter: brightness(0.4);
-}
-.flipped #back {
-	filter: brightness(1.0);
-
-} */
-
-.card-face {
+	-webkit-transform:rotateY(0deg);
+	transform:rotateY(0deg);
 	width:17.12em;
 	min-height:10.80em; /*10.80em;*/
 	max-height:21.60;
-	backdrop-filter: blur(.1em);
 	color:rgba(0,0,0,0.80);
 	background-size: 400% 400%;
 	background: radial-gradient(farthest-corner at 20% 20%,
-	rgba(255,255,255,0.97) 0%,rgba(255,255,255,0.87) 100%);
+	rgba(255,255,255,0.99) 0%,rgba(255,255,255,0.95) 100%);
 	border-radius:.576em;
 	padding:1em;
 	box-sizing: border-box;
 	font-weight:600;
-	/* margin-bottom:10vh; */
-	overflow-y: scroll;
+	overflow-y: auto;
 }
 
+
+
+.card:not(.flipped) #front,
+.card.flipped #back {
+	/* -webkit-backdrop-filter: blur(.1em);
+	backdrop-filter: blur(.1em); */
+}
+
+#fliphint {
+	background-image: url("/arrow_forward.svg");
+	background-position: bottom right;
+	background-repeat: no-repeat;
+}
 #front,
 #back {
 	display:flex;
@@ -212,6 +202,8 @@ body.loading .card {
 	justify-content: space-between;
 	align-items: center;;
 	margin-top:0.3em;
+	user-select:all;
+
 }
 .code-container:hover,
 .link-container:hover {
@@ -226,9 +218,6 @@ body.loading .card {
 	display: flex;
 	font-size:75%;
 	flex-direction: column;
-	xclip-path: polygon(
-		100% 50%, 100% 56.6%, 100% 59.3%, 100% 61.4%, 99.9% 63.2%, 99.9% 64.8%, 99.9% 66.2%, 99.8% 67.5%, 99.8% 68.7%, 99.7% 69.8%, 99.6% 70.8%, 99.5% 71.8%, 99.5% 72.8%, 99.4% 73.7%, 99.3% 74.6%, 99.1% 75.4%, 99% 76.3%, 98.9% 77%, 98.8% 77.8%, 98.6% 78.5%, 98.5% 79.2%, 98.3% 79.9%, 98.1% 80.6%, 98% 81.3%, 97.8% 81.9%, 97.6% 82.5%, 97.4% 83.1%, 97.2% 83.7%, 97% 84.3%, 96.8% 84.8%, 96.5% 85.4%, 96.3% 85.9%, 96% 86.4%, 95.8% 86.9%, 95.5% 87.4%, 95.3% 87.9%, 95% 88.3%, 94.7% 88.8%, 94.4% 89.2%, 94.1% 89.7%, 93.8% 90.1%, 93.4% 90.5%, 93.1% 90.9%, 92.8% 91.3%, 92.4% 91.7%, 92% 92%, 91.7% 92.4%, 91.3% 92.8%, 90.9% 93.1%, 90.5% 93.4%, 90.1% 93.8%, 89.7% 94.1%, 89.2% 94.4%, 88.8% 94.7%, 88.3% 95%, 87.9% 95.3%, 87.4% 95.5%, 86.9% 95.8%, 86.4% 96%, 85.9% 96.3%, 85.4% 96.5%, 84.8% 96.8%, 84.3% 97%, 83.7% 97.2%, 83.1% 97.4%, 82.5% 97.6%, 81.9% 97.8%, 81.3% 98%, 80.6% 98.1%, 79.9% 98.3%, 79.2% 98.5%, 78.5% 98.6%, 77.8% 98.8%, 77% 98.9%, 76.3% 99%, 75.4% 99.1%, 74.6% 99.3%, 73.7% 99.4%, 72.8% 99.5%, 71.8% 99.5%, 70.8% 99.6%, 69.8% 99.7%, 68.7% 99.8%, 67.5% 99.8%, 66.2% 99.9%, 64.8% 99.9%, 63.2% 99.9%, 61.4% 100%, 59.3% 100%, 56.6% 100%, 50% 100%, 43.4% 100%, 40.7% 100%, 38.6% 100%, 36.8% 99.9%, 35.2% 99.9%, 33.8% 99.9%, 32.5% 99.8%, 31.3% 99.8%, 30.2% 99.7%, 29.2% 99.6%, 28.2% 99.5%, 27.2% 99.5%, 26.3% 99.4%, 25.4% 99.3%, 24.6% 99.1%, 23.7% 99%, 23% 98.9%, 22.2% 98.8%, 21.5% 98.6%, 20.8% 98.5%, 20.1% 98.3%, 19.4% 98.1%, 18.7% 98%, 18.1% 97.8%, 17.5% 97.6%, 16.9% 97.4%, 16.3% 97.2%, 15.7% 97%, 15.2% 96.8%, 14.6% 96.5%, 14.1% 96.3%, 13.6% 96%, 13.1% 95.8%, 12.6% 95.5%, 12.1% 95.3%, 11.7% 95%, 11.2% 94.7%, 10.8% 94.4%, 10.3% 94.1%, 9.9% 93.8%, 9.5% 93.4%, 9.1% 93.1%, 8.7% 92.8%, 8.3% 92.4%, 8% 92%, 7.6% 91.7%, 7.2% 91.3%, 6.9% 90.9%, 6.6% 90.5%, 6.2% 90.1%, 5.9% 89.7%, 5.6% 89.2%, 5.3% 88.8%, 5% 88.3%, 4.7% 87.9%, 4.5% 87.4%, 4.2% 86.9%, 4% 86.4%, 3.7% 85.9%, 3.5% 85.4%, 3.2% 84.8%, 3% 84.3%, 2.8% 83.7%, 2.6% 83.1%, 2.4% 82.5%, 2.2% 81.9%, 2% 81.3%, 1.9% 80.6%, 1.7% 79.9%, 1.5% 79.2%, 1.4% 78.5%, 1.2% 77.8%, 1.1% 77%, 1% 76.3%, 0.9% 75.4%, 0.7% 74.6%, 0.6% 73.7%, 0.5% 72.8%, 0.5% 71.8%, 0.4% 70.8%, 0.3% 69.8%, 0.2% 68.7%, 0.2% 67.5%, 0.1% 66.2%, 0.1% 64.8%, 0.1% 63.2%, 0% 61.4%, 0% 59.3%, 0% 56.6%, 0% 50%, 0% 43.4%, 0% 40.7%, 0% 38.6%, 0.1% 36.8%, 0.1% 35.2%, 0.1% 33.8%, 0.2% 32.5%, 0.2% 31.3%, 0.3% 30.2%, 0.4% 29.2%, 0.5% 28.2%, 0.5% 27.2%, 0.6% 26.3%, 0.7% 25.4%, 0.9% 24.6%, 1% 23.7%, 1.1% 23%, 1.2% 22.2%, 1.4% 21.5%, 1.5% 20.8%, 1.7% 20.1%, 1.9% 19.4%, 2% 18.7%, 2.2% 18.1%, 2.4% 17.5%, 2.6% 16.9%, 2.8% 16.3%, 3% 15.7%, 3.2% 15.2%, 3.5% 14.6%, 3.7% 14.1%, 4% 13.6%, 4.2% 13.1%, 4.5% 12.6%, 4.7% 12.1%, 5% 11.7%, 5.3% 11.2%, 5.6% 10.8%, 5.9% 10.3%, 6.2% 9.9%, 6.6% 9.5%, 6.9% 9.1%, 7.2% 8.7%, 7.6% 8.3%, 8% 8%, 8.3% 7.6%, 8.7% 7.2%, 9.1% 6.9%, 9.5% 6.6%, 9.9% 6.2%, 10.3% 5.9%, 10.8% 5.6%, 11.2% 5.3%, 11.7% 5%, 12.1% 4.7%, 12.6% 4.5%, 13.1% 4.2%, 13.6% 4%, 14.1% 3.7%, 14.6% 3.5%, 15.2% 3.2%, 15.7% 3%, 16.3% 2.8%, 16.9% 2.6%, 17.5% 2.4%, 18.1% 2.2%, 18.7% 2%, 19.4% 1.9%, 20.1% 1.7%, 20.8% 1.5%, 21.5% 1.4%, 22.2% 1.2%, 23% 1.1%, 23.7% 1%, 24.6% 0.9%, 25.4% 0.7%, 26.3% 0.6%, 27.2% 0.5%, 28.2% 0.5%, 29.2% 0.4%, 30.2% 0.3%, 31.3% 0.2%, 32.5% 0.2%, 33.8% 0.1%, 35.2% 0.1%, 36.8% 0.1%, 38.6% 0%, 40.7% 0%, 43.4% 0%, 50% 0%, 56.6% 0%, 59.3% 0%, 61.4% 0%, 63.2% 0.1%, 64.8% 0.1%, 66.2% 0.1%, 67.5% 0.2%, 68.7% 0.2%, 69.8% 0.3%, 70.8% 0.4%, 71.8% 0.5%, 72.8% 0.5%, 73.7% 0.6%, 74.6% 0.7%, 75.4% 0.9%, 76.3% 1%, 77% 1.1%, 77.8% 1.2%, 78.5% 1.4%, 79.2% 1.5%, 79.9% 1.7%, 80.6% 1.9%, 81.3% 2%, 81.9% 2.2%, 82.5% 2.4%, 83.1% 2.6%, 83.7% 2.8%, 84.3% 3%, 84.8% 3.2%, 85.4% 3.5%, 85.9% 3.7%, 86.4% 4%, 86.9% 4.2%, 87.4% 4.5%, 87.9% 4.7%, 88.3% 5%, 88.8% 5.3%, 89.2% 5.6%, 89.7% 5.9%, 90.1% 6.2%, 90.5% 6.6%, 90.9% 6.9%, 91.3% 7.2%, 91.7% 7.6%, 92% 8%, 92.4% 8.3%, 92.8% 8.7%, 93.1% 9.1%, 93.4% 9.5%, 93.8% 9.9%, 94.1% 10.3%, 94.4% 10.8%, 94.7% 11.2%, 95% 11.7%, 95.3% 12.1%, 95.5% 12.6%, 95.8% 13.1%, 96% 13.6%, 96.3% 14.1%, 96.5% 14.6%, 96.8% 15.2%, 97% 15.7%, 97.2% 16.3%, 97.4% 16.9%, 97.6% 17.5%, 97.8% 18.1%, 98% 18.7%, 98.1% 19.4%, 98.3% 20.1%, 98.5% 20.8%, 98.6% 21.5%, 98.8% 22.2%, 98.9% 23%, 99% 23.7%, 99.1% 24.6%, 99.3% 25.4%, 99.4% 26.3%, 99.5% 27.2%, 99.5% 28.2%, 99.6% 29.2%, 99.7% 30.2%, 99.8% 31.3%, 99.8% 32.5%, 99.9% 33.8%, 99.9% 35.2%, 99.9% 36.8%, 100% 38.6%, 100% 40.7%, 100% 43.4%
-	);
 	opacity:1.0
 }
 
@@ -242,11 +231,12 @@ body.default #background {
 	linear-gradient(110.73deg, #009FFF 10.61%, rgba(47, 236, 145, 0.58) 93.57%);
 }
 
-body:not(.default) .background {
+body.blur .background {
 	filter:blur(0.1vmin);
 }
-.theme-candycane #main-container {
 
+
+.theme-candycane #main-container {
 	background: url(img/polkadots.svg),I
 	red;
 }
@@ -259,9 +249,13 @@ img.blob {
 	position:absolute;
 	z-index:-1;
 }
-
+#iframe {
+	width:100%;
+	height:100%;
+	position:absolute;
+}
 #intro {
-	width:320px;
+	width: 12em;
 	max-width:80vw;
 	margin:auto;
 	display:flex;
@@ -270,6 +264,17 @@ img.blob {
 	align-items: center;
 	font-size:4vmin;
 	justify-content: center;
+	overflow:hidden;
+	max-width: 80vw;
+	margin: auto;
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+	align-items: center;
+	font-size: 4vmin;
+	justify-content: center;
+	overflow: hidden;
+	font-size: 1.5rem;
 }
 
 #intro-icon {
@@ -282,31 +287,29 @@ form {
 	margin: -0.5em;
 }
 
+.formrow {
+	display:flex;
+	flex-direction: row;
+	gap:0.5em;
+}
+
 .formel {
 	font-size:60%;
 	display:flex;
 	flex-direction:column;
 	margin-bottom:1em;
-	padding-left:0.2em;
+	flex: 1 1 0px;
 }
 
 .formel label {
 	font-size:75%;
 	font-weight:800;
 	opacity:0.8;
-	margin-left:0.2em;
 	margin-bottom:0.1em;
 	text-transform: uppercase;
 }
 
-.formrow {
-	display:flex;
-	flex-direction: row;
-}
-
 .formel {
-	flex: 1 1 0px;
-	margin-left:0.5em;
 }
 .formel input,
 .formel textarea{
@@ -316,7 +319,7 @@ background:none;
 font-weight:400;
 resize: vertical;
 padding:0.2em;
-border-bottom:1px solid black;
+border-bottom:1px solid rgba(0,0,0,0.4);
 }
 
 
@@ -355,7 +358,6 @@ border-bottom:1px solid black;
 }
 
 .theme:hover {
-
 	background:rgba(0,0,0,0.1);
 }
 
@@ -367,6 +369,11 @@ border-bottom:1px solid black;
 	background-position: center center;
 }
 
+#background {
+	pointer-events: none;
+	overflow:hidden;
+	border:none;
+}
 
 .foreground,
 .background {
@@ -374,10 +381,6 @@ border-bottom:1px solid black;
 	height:100vh;
 	position:fixed;
 	top:0; right: 0; bottom:0; left: 0;
-	/* -webkit-mask-size: 200vmax;
-	-webkit-mask-position: center;
-	background:var(--foreground-color);
-	animation: rotation 360s infinite linear; */
 }
 
 @keyframes rotation {

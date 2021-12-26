@@ -45,6 +45,7 @@ exports.index = functions.https.onRequest((req, res) => {
   res.status(200).send(`<!doctype html>
 <head>
   <title>${title}</title>
+  <meta name="theme-color" content="#2d2d2d">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <meta property="og:title" content="${title}">
@@ -97,7 +98,7 @@ var roundRect = function (ctx, x, y, w, h, r) {
 
 exports.og = functions.https.onRequest((req, res) => {
   const info = req.query;
-  const canvas = createCanvas(1200, 630);
+  const canvas = createCanvas(720, 720);
   const ctx = canvas.getContext('2d');
 
   loadImage('img/stripes.svg').then((image) => {
@@ -109,29 +110,29 @@ exports.og = functions.https.onRequest((req, res) => {
     ctx.beginPath();
     ctx.rect(0, 0, canvas.width, canvas.height);
   
-    var cardW = 856 / 1.5;
-    var cardH = 540 / 1.5;
-
-    ctx.save()
-    ctx.drawImage(image, 0, 0, width, height) 
-
-    var radial = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 0, canvas.width/2, canvas.height/2, Math.hypot(canvas.width/2, canvas.height/2))
-    radial.addColorStop(0, "white");
-    radial.addColorStop(1, "white");
-    ctx.fillStyle = radial
-    ctx.globalCompositeOperation = "source-in"
-    ctx.globalAlpha = 0.1;
+    var cardW = 856 / 1.6;
+    var cardH = 540 / 1.6;
+    ctx.fillStyle = "rgba(220,220,220,0.4)"
     ctx.fill(); 
 
-    var linear = ctx.createLinearGradient(0, 0, width, height);
-    linear.addColorStop(0, "#009FFF");
-    linear.addColorStop(1, "rgba(47, 236, 145, 1.0)");
-    ctx.fillStyle = linear
-    ctx.globalCompositeOperation = "destination-over"
-    ctx.globalAlpha = 1.0;
+    ctx.save()
+    ctx.globalAlpha = 0.05;
+    ctx.drawImage(image, 0, 0, width, height) 
+    ctx.restore();
 
-    ctx.fill();
-    ctx.restore()
+    // var radial = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 0, canvas.width/2, canvas.height/2, Math.hypot(canvas.width/2, canvas.height/2))
+    // radial.addColorStop(0, "white");
+    // radial.addColorStop(1, "white");
+    // ctx.fillStyle = radial
+
+    // var linear = ctx.createLinearGradient(0, 0, width, height);
+    // linear.addColorStop(0, "#009FFF");
+    // linear.addColorStop(1, "rgba(47, 236, 145, 1.0)");
+    // ctx.fillStyle = linear
+    // ctx.globalCompositeOperation = "destination-over"
+    // ctx.globalAlpha = 1.0;
+    // ctx.fill();
+    // ctx.restore()
 
     var tilt = (Math.random() - 0.5) * 5
     ctx.translate(width/2, height/2);
@@ -152,12 +153,12 @@ exports.og = functions.https.onRequest((req, res) => {
     ctx.restore();
 
     var size = cardH/5;
-  ctx.font = `700 ${size}px Helvetica`;
-  ctx.fillStyle = "black";
-  
-  ctx.fillText(info.re || "A tiny.gift\nfor you", x + size/2, y + size *1.5);
-  ctx.font = `700 ${size/2}px Helvetica`;
-  if (info.from && info.from != "undefined") ctx.fillText("—" + info.from, x + size/2, y + cardH - size/2);
+    ctx.font = `700 ${size}px Helvetica`;
+    ctx.fillStyle = "black";
+    
+    ctx.fillText(info.re || "A tiny.gift\nfor you", x + size/2, y + size *1.5);
+    ctx.font = `700 ${size/2}px Helvetica`;
+    if (info.from && info.from != "undefined") ctx.fillText("—" + info.from, x + size/2, y + cardH - size/2);
 
 
   } else {
@@ -165,11 +166,10 @@ exports.og = functions.https.onRequest((req, res) => {
     ctx.rect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "red";
     ctx.fill();
-      
   }
     
     res.set('Cache-Control', 'public, max-age=60, s-maxage=31536000');
     res.writeHead(200, {'Content-Type': 'image/png'});
-    canvas.createJPEGStream().pipe(res);
+    canvas.createPNGStream().pipe(res);
   })
 });
